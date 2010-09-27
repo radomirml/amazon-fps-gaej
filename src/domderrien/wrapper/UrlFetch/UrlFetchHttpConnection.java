@@ -67,15 +67,23 @@ public class UrlFetchHttpConnection extends HttpConnection {
 			_response = urlFS.fetch(getRequest());
 			// Rebuild stream of HTTP headers (except the HTTP status retrieved from readLine(String) method)
 			StringBuilder buffer = new StringBuilder();
+			boolean chunked = false; // chunked check added by Radomir (on GAE responses are not chunked) 
 			for (HTTPHeader header: _response.getHeaders()) {
 				buffer.append(header.getName()).append(SEPARATOR).append(header.getValue()).append(NEW_LINE);
+				if("Transfer-Encoding".equals(header.getName()) && header.getValue().indexOf("chunked") != -1)
+					chunked = true;
 			}
 			buffer.append("Content-Length: ").append(_response.getContent().length).append(NEW_LINE);
 			buffer.append(NEW_LINE);
-			// Rebuild stream of HTTP content (chunked-encoded)
-			buffer.append(Integer.toString(_response.getContent().length, 16)).append(";chunk size").append(NEW_LINE);
-			buffer.append(new String(_response.getContent())).append(NEW_LINE);
-			buffer.append("0;").append(NEW_LINE);
+			if(chunked) {
+				// Rebuild stream of HTTP content (chunked-encoded)
+				buffer.append(Integer.toString(_response.getContent().length, 16)).append(";chunk size").append(NEW_LINE);
+				buffer.append(new String(_response.getContent())).append(NEW_LINE);
+				buffer.append("0;").append(NEW_LINE);
+			}
+			else {
+				buffer.append(new String(_response.getContent()));
+			}
 			_responseBody.resetActualContent(buffer.toString());
 		}
 		return _response;
