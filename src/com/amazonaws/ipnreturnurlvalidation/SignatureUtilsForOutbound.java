@@ -338,14 +338,16 @@ public class SignatureUtilsForOutbound {
 	        // HttpURLConnection.setFollowRedirects(false);
 			URL url = new URL("http://aws.amazon.com/");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			boolean followRedirects = connection.getInstanceFollowRedirects();
+			//boolean followRedirects = connection.getInstanceFollowRedirects(); // Radomir: not used 
 			connection.setInstanceFollowRedirects(false);
 	        try {
 	            certificate = URLReader.getUrlContents(certificateUrl);
 	        } catch (IOException e) {
 	            throw new SignatureException(e);
 	        } finally {
-	            HttpURLConnection.setFollowRedirects(followRedirects);
+	        	// Radomir: we've modified instance and don't need to revert global state
+	        	// it was also throwing access control exception
+	            //HttpURLConnection.setFollowRedirects(followRedirects);
 	        }
 		}
 		catch (MalformedURLException ex) {
