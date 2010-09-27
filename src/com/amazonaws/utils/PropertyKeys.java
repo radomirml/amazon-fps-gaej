@@ -32,6 +32,8 @@ public enum PropertyKeys {
 	AWS_SECRET_KEY("AwsSecretKey"), 
 	AWS_SERVICE_END_POINT("AwsServiceEndPoint"), 
 	CBUI_SERVICE_END_POINT("CBUIServiceEndPoint"),
+	AWS_SERVICE_END_POINT_SANDBOX("SandboxAwsServiceEndPoint"), 
+	CBUI_SERVICE_END_POINT_SANDBOX("SandboxCBUIServiceEndPoint"),
 	PROXY_HOST("ProxyHost"), 
 	PROXY_PORT("ProxyPort"),
 	PROXY_USER_NAME("ProxyUserName"),

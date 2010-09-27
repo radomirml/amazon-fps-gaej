@@ -76,11 +76,15 @@ public abstract class AmazonFPSCBUIPipeline {
      */
     protected String awsSecretKey;
 
+    protected boolean usingSandbox = false;
+    
     /**
      * The default URL corresponds to production environment. Change the URL for sandbox
      */
     protected static String CBUI_URL = PropertyBundle.getProperty(PropertyKeys.CBUI_SERVICE_END_POINT);
 
+    protected static String CBUI_URL_SANDBOX = PropertyBundle.getProperty(PropertyKeys.CBUI_SERVICE_END_POINT_SANDBOX);
+    
     protected static String VERSION = "2009-01-09";
 
     protected static String SIGNATURE_VERSION = "2";
@@ -136,15 +140,16 @@ public abstract class AmazonFPSCBUIPipeline {
             throw new RuntimeException("Parameters can not be empty.");
         }
 
-        String hostHeader = getHostHeader(CBUI_URL);
-        String requestURI = getRequestURI(CBUI_URL);
+        String cbuiUrl = usingSandbox ? CBUI_URL_SANDBOX : CBUI_URL;
+        String hostHeader = getHostHeader(cbuiUrl);
+        String requestURI = getRequestURI(cbuiUrl);
 
         String signature = signParameters(parameters, HTTP_GET_METHOD, hostHeader, requestURI);
         parameters.put("signature", signature);
 
         String queryString = constructQueryString(parameters);
         
-        return CBUI_URL + "?" + queryString;
+        return cbuiUrl + "?" + queryString;
     }
 
 
@@ -361,4 +366,13 @@ public abstract class AmazonFPSCBUIPipeline {
         validateParameters(parameters);
         return constructUrl(parameters);
     }
+
+	public boolean isUsingSandbox() {
+		return usingSandbox;
+	}
+
+	public void setUsingSandbox(boolean usingSandbox) {
+		this.usingSandbox = usingSandbox;
+	}
+    
 }
